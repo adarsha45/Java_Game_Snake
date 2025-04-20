@@ -11,7 +11,7 @@ public class App {
         frame.setLocationRelativeTo(null); // Center the window on the screen
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-       //12:22
+       //12:22 
         SnakeGame snakeGame = new SnakeGame(width, height);
         frame.add(snakeGame);    
         frame.pack();
