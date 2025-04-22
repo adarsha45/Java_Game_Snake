@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.*;
@@ -27,6 +28,9 @@ public class SnakeGame extends JPanel implements ActionListener,KeyListener {
     int velocityX; // Speed of the snake
     int velocityY; // Speed of the snake
 
+    ArrayList<Tile> snakeBody = new ArrayList<>(); // List to store the snake's body segments
+
+
     SnakeGame(int boardWidth, int boardHeight) {
         this.boardWidth = boardWidth;
         this.boardHeight = boardHeight; 
@@ -37,6 +41,7 @@ public class SnakeGame extends JPanel implements ActionListener,KeyListener {
 
         snakeHead = new Tile(5,5); // Initialize snake head position
         food = new Tile(10, 10);
+        snakeBody = new ArrayList<Tile>(); // Initialize the snake body list
 
         random = new Random();
         placeFood(random); // Place food at a random position
@@ -73,6 +78,12 @@ public class SnakeGame extends JPanel implements ActionListener,KeyListener {
         //draw food
         g.setColor(Color.RED);
         g.fillRect(food.x * tileSize, food.y * tileSize, tileSize, tileSize); // Draw food at (10, 10) for now
+
+        for(int i=0;i<snakeBody.size();i++){
+            Tile segment = snakeBody.get(i);
+            g.setColor(Color.YELLOW); // Set color for snake body segments
+            g.fillRect(segment.x * tileSize, segment.y * tileSize, tileSize, tileSize); // Draw each segment of the snake body
+        }
     }
 
     public void placeFood(Random random) {
@@ -84,7 +95,18 @@ public class SnakeGame extends JPanel implements ActionListener,KeyListener {
     
     }
 
+    public boolean collision(Tile tile1,Tile tile2){
+        return tile1.x == tile2.x && tile1.y == tile2.y;
+    }
+
     public void move(){
+        if(collision(snakeHead, food)){
+            // If snake head collides with food, place new food and grow the snake
+            snakeBody.add(new Tile(snakeHead.x, snakeHead.y)); // Add new segment to the snake body
+            placeFood(random); // Place new food at a random position
+
+            // Increase the size of the snake body by adding a new segment at the current head position             
+        }
         snakeHead.x += velocityX; // Move snake head to the right by one tile
         snakeHead.y += velocityY; // Keep snake head in the same row
         if(snakeHead.y >= boardHeight/tileSize){
@@ -111,16 +133,19 @@ public class SnakeGame extends JPanel implements ActionListener,KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_UP) {
+        if(e.getKeyCode() == KeyEvent.VK_UP && velocityY != 1) {
+            // Prevent snake from moving in the opposite direction
             velocityX = 0; // Move snake head up
             velocityY = -1; // Move snake head up
-        } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+        } else if (e.getKeyCode() == KeyEvent.VK_DOWN && velocityY != -1) {
+            // Prevent snake from moving in the opposite direction  
             velocityX = 0; // Move snake head down
             velocityY = 1; // Move snake head down
-        } else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+        } else if (e.getKeyCode() == KeyEvent.VK_LEFT && velocityX != 1) {
+            // Prevent snake from moving in the opposite direction      
             velocityX = -1; // Move snake head left
             velocityY = 0; // Move snake head left
-        } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+        } else if (e.getKeyCode() == KeyEvent.VK_RIGHT && velocityX != -1) {
             velocityX = 1; // Move snake head right
             velocityY = 0; // Move snake head right
         }
