@@ -15,5 +15,6 @@ public class App {
         SnakeGame snakeGame = new SnakeGame(width, height);
         frame.add(snakeGame);    
         frame.pack();
+        snakeGame.requestFocus(true); // Make the game panel focusable
     }
 }
